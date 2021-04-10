@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Trivia Game{% endblock %}
+
+{% block content %}
+    <h4>Question #{{question_id}}: {{question}}</h4>
+     <form action="#" method="post">
+         <div class="divider"></div>
+         <button class="btn btn-info btn-lg" name="answer" type="submit" value="{{question_id}}#1">1. {{answers[0]}}</button>
+         <div class="divider"></div>
+         <button class="btn btn-info btn-lg" name="answer" type="submit" value="{{question_id}}#2">2. {{answers[1]}}</button><br>
+         <div class="divider"></div>
+         <button class="btn btn-info btn-lg" name="answer" type="submit" value="{{question_id}}#3">3. {{answers[2]}}</button><br>
+         <div class="divider"></div>
+         <button class="btn btn-info btn-lg" name="answer" type="submit" value="{{question_id}}#4">4. {{answers[3]}}</button><br>
+    </form>
+    <br>
+    <a title="Go to next question" class="btn btn-warning" href="/questions" role="button"><i class="fa fa-arrow-right" aria-hidden="true"></i> Next</a>
+    <a title="Go to home" class="btn btn-primary" href="/play" role="button"><i class="fa fa-home" aria-hidden="true"></i> Main</a>
+<!--    <div class="footer">Answered {{answered}}/{{total_questions}} questions</div>-->
+    <p><br>Answered {{answered}}/{{total_questions}} questions</p>
+{% endblock %}
