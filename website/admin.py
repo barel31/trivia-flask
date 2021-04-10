@@ -133,7 +133,7 @@ def admin():
             return render_template("admin_users.html", values=values)
 
         else:
-            flash("The password is absolutely not a " + ADMIN_PASSWORD)
+            #flash("The password is absolutely not a " + ADMIN_PASSWORD)
             return render_template("admin.html")
 
 
