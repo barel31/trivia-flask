@@ -1,4 +1,4 @@
-# trivia-game flask
+# Trivia-Game flask
 Trivia game website build in flask framework
 
 # Edit:
