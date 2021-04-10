@@ -4,7 +4,6 @@
 {% block content %}
 
     <div class="sign">
-<!--     span class="flicker">score</span>bo<span class="flicker">a</span><span class="fast-flicker">rd</span>-->
       sc<span class="fast-flicker">o</span>re<span class="flicker">b</span>oard
     </div>
 
@@ -17,7 +16,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for item in values %}https://codepen.io/accounts/signup/user/free/
+    {% for item in values %}
         {% if item.score %}
             {% if user_id == item.id %}
                 <tr class="table-active">
