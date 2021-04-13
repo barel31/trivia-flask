@@ -3,6 +3,14 @@
 {% block content %}
 
     <h6>Welcome Admin</h6>
+
+    {% if finish_list %}
+    <h5>Leaderboard:</h5>
+    <p>{% for name in finish_list %}
+    {{loop.index}}. {{name}}<br>
+    {% endfor %}</p>
+    {% endif %}
+
     <form action="#" method="post">
         <strong>Query:   <input type="text" name="query" required/></strong>
         <input title="Send query to the server" class="btn btn-dark" type="Submit" value="Send"/>
@@ -44,6 +52,7 @@
             </div>
         </div>
     </div>
+
     <form action="#" method="post">
         <button title="Refresh the question database" onclick="return confirm('Are you sure you want to refresh the questions database?')" id="admin_refresh_database" class="btn btn-success btn-lg" name="refresh_questions_database" type="submit" value="refresh"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Refresh</button>
         <a title="Logout from Admin" class="btn btn-danger btn-lg" href="/admin_logout" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>

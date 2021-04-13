@@ -2,7 +2,7 @@
 {% block title %}Trivia Game{% endblock %}
 
 {% block content %}
-    <h4>Question #{{question_id}}: {{question}}</h4>
+    <h4>Q#{{question_id}}: {{question}}</h4>
      <form action="#" method="post">
          <div class="divider"></div>
          <button class="btn btn-info btn-lg" name="answer" type="submit" value="{{question_id}}#1">1. {{answers[0]}}</button>

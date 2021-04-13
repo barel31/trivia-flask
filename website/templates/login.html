@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Trivia Game{% endblock %}
+{% block head %}<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='sign.css') }}">{% endblock %}
 {% block content %}
+    <div class="sign">
+      Tr<span class="fast-flicker">i</span>vi<span class="flicker">a</span>
+    </div>
     <h6>Welcome to my Trivia game. please choose your nickname</h6>
     <form action="#" method="post">
-        <strong>Nickname:   <input type="text" name="un" required/></strong>
-        <button title="Choose any nickname" type="submit" class="btn btn-success"><i class="fa fa-sign-in"></i> Login</button>
+        <strong>Nickname:   </strong><input type="text" name="un" required/>
+        <button title="Choose any nickname" type="submit" class="btn btn-success btn-margin"><i class="fa fa-sign-in"></i> Login</button>
 
     </form>
 {% endblock %}

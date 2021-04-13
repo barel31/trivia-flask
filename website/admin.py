@@ -1,13 +1,10 @@
 from flask import Blueprint, redirect, url_for, render_template, request, session, flash
 from .models import User
 from . import db
-from .main import load_questions_from_web
+from .main import reload_questions, finish_list, write_log
 from flask_login import current_user, login_required
 
-questions = {}
-asked_lst = {}
 ADMIN_PASSWORD = "banana"
-
 
 app_admin = Blueprint("admin", __name__)
 
@@ -26,8 +23,7 @@ def admin():
                 session["admin"] = str(current_user)
                 print("[ADMIN]", "User", session["nickname"], "have been logged to Admin")
 
-                values = User.query.all()
-                return render_template("admin_users.html", values=values)
+                return load_admin_page()
 
             else:
                 flash("Wrong password", category='error')
@@ -50,14 +46,14 @@ def admin():
                 print('[ERROR]', e)
                 print(request.form["delete"])
 
-            values = User.query.all()
-            return render_template("admin_users.html", values=values)
+            return load_admin_page()
 
         elif "edit_score" in request.form:
             try:
                 given_id, score = request.form["edit_score"].split("#")
                 if not score.isdigit():
                     raise Exception('The score have to be a number')
+
                 user_id = User.query.filter_by(id=given_id).first()
                 user_id.score = score
                 db.session.commit()
@@ -71,8 +67,7 @@ def admin():
                 print('[ERROR]', e)
                 print(request.form["edit_score"])
 
-            values = User.query.all()
-            return render_template("admin_users.html", values=values)
+            return load_admin_page()
 
         elif "edit_name" in request.form:
             try:
@@ -90,31 +85,29 @@ def admin():
 
                     flash(f"Username {old_name!r} have been changed to {name!r}", category='success')
                     print(f"[ADMIN] {session['nickname']} edit User {old_name} name to {name}")
+
             except Exception as e:
                 flash(e, category='error')
                 flash(request.form["edit_name"], category='error')
                 print('[ERROR]', e)
                 print(request.form["edit_name"])
 
-            values = User.query.all()
-            return render_template("admin_users.html", values=values)
+            return load_admin_page()
 
         elif "refresh_questions_database" in request.form:
             try:
-                load_questions_from_web()
-                asked_lst.clear()
+                reload_questions()
 
                 flash("Questions database have been refreshed!", category='success')
                 print(f"[ADMIN] {session['nickname']} Refresh questions database")
 
             except Exception as e:
                 flash(e, category='error')
-                flash(request.form["refresh_database"], category='error')
+                flash(request.form["refresh_questions_database"], category='error')
                 print('[ERROR]', e)
-                print(request.form["refresh_database"])
+                print(request.form["refresh_questions_database"])
 
-            values = User.query.all()
-            return render_template("admin_users.html", values=values)
+            return load_admin_page()
 
         elif "query" in request.form:
             query = request.form["query"]
@@ -124,18 +117,22 @@ def admin():
                 result = e
 
             flash(result)
-            values = User.query.all()
-            return render_template("admin_users.html", values=values)
+            return load_admin_page()
 
     else: # GET method
         if "admin" in session:
-            values = User.query.all()
-            return render_template("admin_users.html", values=values)
+            return load_admin_page()
 
         else:
-            #flash("The password is absolutely not a " + ADMIN_PASSWORD)
+            flash("The password is absolutely not a " + ADMIN_PASSWORD)
             return render_template("admin.html")
 
+
+
+def load_admin_page():
+    # global finish_list
+    values = User.query.all()
+    return render_template("admin_users.html", values=values, finish_list=finish_list)
 
 
 @app_admin.route("/admin_logout")

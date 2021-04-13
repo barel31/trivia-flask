@@ -1,7 +1,24 @@
 body {
     background: rgb(238,174,202);
     background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+
+    mobile size fix
+    height:auto!important;
+    min-height:100vh;
+}
+.btn-margin{
+    margin: 10px;
 }
 .divider{
-    height:15px;
+    height: 15px;
+}
+.divider2{
+    /*line-height: 1em;
+    display: inline-block;
+    text-decoration: none;*/
+    padding: 40px;
+    margin: 30px;
+}
+h4{
+    font-size: 4vmin
 }

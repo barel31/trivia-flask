@@ -9,7 +9,9 @@ import html
 import time
 
 questions = {}
-answered_lst = {}
+answered_dict = {}
+finish_list = []
+
 ADMIN_PASSWORD = "banana"
 questions_update_time = ''
 
@@ -23,26 +25,21 @@ def login():
 
         # TODO implement password
 
-        user = User.query.filter_by(name=username).first()
-        if user:  # if user already in db get the score to the session
+        if user := User.query.filter_by(name=username).first():
             session["score"] = user.score
             print("User:", username, "logged in")
+            write_log(f"[User] {username}", "logged in")
         else: # Setting a new user
             user = User(username)
             db.session.add(user)
             db.session.commit()
             session["score"] = 0
             print("New user:", username, "logged in")
+            write_log(f"[User] New user {username}", "logged in")
 
         login_user(user, remember=True)
-        # session["user_id"] = user.id
         session["nickname"] = username
         flash("Login successful!", category='success')
-
-        # if "return" in session:
-        #     return_page = session["return"]
-        #     session.pop("return", None)
-        #     return redirect(url_for(return_page))
 
 
         return redirect(request.args.get("next") or url_for("main.play"))
@@ -75,44 +72,74 @@ def play():
 @login_required
 def _questions():
     if request.method == "POST":  # answer
-        question_id, answer = request.form['answer'].split('#')
+        if "answer" in request.form:
+            question_id, answer = request.form['answer'].split('#')
 
-        correct_answer = check_for_answer(question_id)
-        is_right = correct_answer == int(answer)
-        if is_right:
-            user_id = current_user.get_id()
-            flash('Correct, you got 5 points!', category="success")
+            correct_answer = check_for_answer(question_id)
+            if is_right := correct_answer == int(answer):
+                user_id = current_user.get_id()
+                flash('Correct, you got 5 points!', category="success")
 
-            rank = check_for_user_rank(user_id)
-            five_points(user_id)
-            rank2 = check_for_user_rank(user_id)
-            if rank2 < rank:
-                flash(f'You went up in the Scoreboard! Your position is now #{rank2}!', category="success")
+                rank = check_for_user_rank(user_id)
+                five_points(user_id)
+                rank2 = check_for_user_rank(user_id)
+                if rank2 < rank:
+                    flash(f'You went up in the Scoreboard! Your position is now #{rank2}!', category="success")
 
-            if user_id in answered_lst.keys():
-                answered_lst[user_id] += [int(question_id)]
-            else:
-                answered_lst[user_id] = [int(question_id)]
-        else: # wrong answer
-            flash(f'Wrong!, the answer is ({correct_answer}) {questions[int(question_id)]["answers"][correct_answer-1]}', category='error')
+                if user_id in answered_dict.keys():
+                    answered_dict[user_id] += [int(question_id)]
+                else:
+                    answered_dict[user_id] = [int(question_id)]
+            else: # wrong answer
+                flash(f'Wrong!, the answer is ({correct_answer}) {questions[int(question_id)]["answers"][correct_answer-1]}', category='error')
 
-        print("User", session["nickname"], "answered", "right" if is_right else "wrong", "to question #" + question_id)
+            print("User", session["nickname"], "answered", "right" if is_right else "wrong", "to question #" + question_id)
 
-        return redirect(url_for("main._questions"))
+            return redirect(url_for("main._questions"))
+
+        elif "refresh_questions_database" in request.form:
+            finish, _,_ = create_random_question(current_user.get_id())
+            if finish is not None:
+                flash("You have to answer all questions before you can refreshing the questions database", category="error")
+                return redirect(url_for("main._questions"))
+
+            try:
+                reload_questions()
+
+                flash("Questions database have been refreshed!", category='success')
+                print(f"User {session['nickname']} Refresh questions database")
+                write_log(f"[User] {session['nickname']}", "refreshed questions database")
+
+            except Exception as e:
+                flash(e, category='error')
+                flash(request.form["refresh_questions_database"], category='error')
+                print('[ERROR]', e)
+                write_log('[ERROR]', e)
+                print(request.form["refresh_questions_database"])
+
+            return redirect(url_for("main._questions"))
+
     else:  # render question
         question_id, question, answers = create_random_question(current_user.get_id())
 
-        if question_id is None:
-            return render_template("no_questions.html")
+        if question_id is None: # render no_questions.html
+            global finish_list
+            place = len(finish_list)
+            if session["nickname"] not in finish_list:
+                finish_list += [session["nickname"]]
+                place += 1
+                write_log(f"[User] {session['nickname']}", f"finish all the questions. (#{place})")
+
+            flash(f"You are the {'first' if place==1 else '#'+str(place)} to complete all of the questions since last database was refresh! ({questions_update_time})", category="success")
+
+            return render_template("no_questions.html", number=place, database_time=questions_update_time, finish_list=finish_list)
 
         user_id = current_user.get_id()
-        if user_id not in answered_lst.keys():
-            answered_lst[user_id] = []
+        if user_id not in answered_dict.keys():
+            answered_dict[user_id] = []
 
         return render_template("questions.html", question_id=question_id, question=question, answers=answers,
-                               answered=len(answered_lst[user_id]), total_questions=len(questions))
-
-    # return redirect(url_for("main.play")) # user not login
+                               answered=len(answered_dict[user_id]), total_questions=len(questions))
 
 
 @app_main.route("/scoreboard")
@@ -127,6 +154,7 @@ def logout():
         username = session["nickname"]
         flash(f"You have been logged out! {username}")
         print("User:", username, "logged out")
+        write_log(f"[User] {username}", "logged out")
     else:
         flash("You are not logged in")
 
@@ -142,11 +170,14 @@ def logout():
 
 
 def create_random_question(user_id):
-    if user_id in answered_lst.keys():
-        questions_asked = answered_lst[user_id]
+    global answered_dict
+    if user_id in answered_dict.keys():
+        questions_asked = answered_dict[user_id]
     else:
         questions_asked = []
     questions_not_asked = [x for x in questions.keys() if x not in questions_asked]
+    # questions_not_asked = map(lambda x: x, questions.keys())
+
 
     if len(questions_not_asked) == 0:  # No question remain
         return None, None, None
@@ -159,7 +190,7 @@ def create_random_question(user_id):
 
 
 def load_questions_from_web():
-    r = requests.get("https://opentdb.com/api.php?amount=50&difficulty=easy&type=multiple")
+    r = requests.get("https://opentdb.com/api.php?amount=20&difficulty=easy&type=multiple")
     # r.text.replace("&#039;", "'").replace("&quot;", "'").replace("&amp;", "&")
     j = json.loads(r.text)
     for count, question in enumerate(j['results'], 1):
@@ -186,6 +217,7 @@ def check_for_answer(question_id):
     except Exception as e:
         correct_answer = 0
         print(e)
+        write_log("[EXCEPTION]", e)
         print('[EXCEPTION] correct_answer = 0')
 
     return correct_answer
@@ -211,6 +243,19 @@ def check_for_user_rank(user_id):
     # print(query)
 
     return -1
+
+
+def reload_questions():
+    load_questions_from_web()
+
+    answered_dict.clear()
+    finish_list.clear()
+
+
+def write_log(prefix, bfr):
+    with open('logs.log', 'a') as log:
+        log.write(f'{time.strftime("%d/%m/%y %H:%M")} {prefix} {bfr}\n')
+
 
 # TODO implement request method
 # @app_main.route('/request-test', method=['POST'])

@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Trivia Game{% endblock %}
-
+{% block head %}<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='sign.css') }}">{% endblock %}
 {% block content %}
-    <h4>Gameover. no questions have been left. please wait for the admin to refreshing the questions database</h4>
-    <a title="Refresh page" class="btn btn-warning" href="/questions" role="button"><i class="fa fa fa-refresh" aria-hidden="true"></i>Refresh</a>
-    <a title="Go to home" class="btn btn-primary" href="/play" role="button"><i class="fa fa-home" aria-hidden="true"></i>Main</a>
+    {% if number %}
+    <div class="sign">
+      #<span class="fast-flicker">{{number}}</span>
+    </div>
+    {% endif %}
+    {% if finish_list %}
+    <h5>Leaderboard:</h5>
+    <p>{% for name in finish_list %}
+    {{loop.index}}. {{name}}<br>
+    {% endfor %}</p>
+    {% endif %}
+    <h5>Gameover. no questions have been left. please wait for the admin to refreshing the questions database.</h5>
+    <a title="Refresh page" class="btn btn-warning" href="/questions" role="button"><i class="fa fa fa-refresh" aria-hidden="true"></i> Reload page</a>
+    <a title="Go to home" class="btn btn-primary" href="/play" role="button"><i class="fa fa-home" aria-hidden="true"></i> Main</a>
+    <div class="divider"></div>
+<form action="#" method="post">
+    <button title="Refresh the question database" onclick="return confirm('Are you sure you want to refresh the questions database?')" id="refresh_database" class="btn btn-danger btn-lg" name="refresh_questions_database" type="submit" value="refresh"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Refresh Database</button>
+</form>
+    <p>Last time questions database was refreshed: {{database_time}}</p>
 {% endblock %}
