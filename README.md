@@ -3,7 +3,7 @@ Trivia game website build in flask framework
 
 # Edit:
 1. Edit run.py:
-  Edit 'HOST' to desire IP (default '0.0.0.0') 
+  Edit 'HOST' to the IP Address (default '0.0.0.0') 
 2. Edit website/__ init __.py:
   Edit 'DB_NAME' to the database path (default 'test2.sqlite3')
 3. Edit website/admin.py:
