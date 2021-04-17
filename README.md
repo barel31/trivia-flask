@@ -1,7 +1,7 @@
 # Trivia-Game flask
 Trivia game website build in flask framework
 
-# Edit:
+# Instalattion:
 1. Edit run.py:
   Edit 'HOST' to the IP Address (default '0.0.0.0') 
 2. Edit website/__ init __.py:
