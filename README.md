@@ -1,5 +1,6 @@
 # Trivia-Game flask
 Trivia game website build in flask framework
+http://trivia-flask.azurewebsites.net/play
 
 # Installation:
 1. Edit run.py:
