@@ -11,7 +11,7 @@ import time
 questions = {}
 answered_dict = {}
 finish_list = []
-
+database_refreshed_by = 'Server'
 ADMIN_PASSWORD = "banana"
 questions_update_time = ''
 
@@ -57,11 +57,13 @@ def login():
 @login_required
 def play():
     if "nickname" and "score" in session:
+        global database_refreshed_by
         return render_template("play.html", 
                                username=session["nickname"], 
                                score=session["score"], 
                                database_time=questions_update_time, 
-                               total_questions=len(questions.keys()))
+                               total_questions=len(questions.keys()),
+                               database_refreshed_by=database_refreshed_by)
     else:
         flash("Please login")
         return redirect(url_for("main.login"))
@@ -76,12 +78,13 @@ def _questions():
             question_id, answer = request.form['answer'].split('#')
 
             correct_answer = check_for_answer(question_id)
+            user_id = current_user.get_id()
+
             if is_right := correct_answer == int(answer):
-                user_id = current_user.get_id()
                 flash('Correct, you got 5 points!', category="success")
 
                 rank = check_for_user_rank(user_id)
-                five_points(user_id)
+                points(user_id, 5)
                 rank2 = check_for_user_rank(user_id)
                 if rank2 < rank:
                     flash(f'You went up in the Scoreboard! Your position is now #{rank2}!', category="success")
@@ -91,7 +94,8 @@ def _questions():
                 else:
                     answered_dict[user_id] = [int(question_id)]
             else: # wrong answer
-                flash(f'Wrong!, the answer is ({correct_answer}) {questions[int(question_id)]["answers"][correct_answer-1]}', category='error')
+                flash(f'Wrong!, you lost 3 points\nthe answer is ({correct_answer}) {questions[int(question_id)]["answers"][correct_answer-1]}', category='error')
+                points(user_id, -3)
 
             print("User", session["nickname"], "answered", "right" if is_right else "wrong", "to question #" + question_id)
 
@@ -126,9 +130,12 @@ def _questions():
             global finish_list
             place = len(finish_list)
             if session["nickname"] not in finish_list:
+                write_log(f"[User] {session['nickname']}", f"finish all the questions. (#{place})")
+
                 finish_list += [session["nickname"]]
                 place += 1
-                write_log(f"[User] {session['nickname']}", f"finish all the questions. (#{place})")
+                global database_refreshed_by
+                database_refreshed_by = session['nickname']
 
             flash(f"You are the {'first' if place==1 else '#'+str(place)} to complete all of the questions since last database was refresh! ({questions_update_time})", category="success")
 
@@ -223,9 +230,9 @@ def check_for_answer(question_id):
     return correct_answer
 
 
-def five_points(user_id):
+def points(user_id, points):
     found_user = User.query.filter_by(id=user_id).first()
-    found_user.score += 5
+    found_user.score += points
     db.session.commit()
 
     if "score" in session:
@@ -247,6 +254,9 @@ def check_for_user_rank(user_id):
 
 def reload_questions():
     load_questions_from_web()
+
+    global database_refreshed_by
+    database_refreshed_by = 'Admin'
 
     answered_dict.clear()
     finish_list.clear()
