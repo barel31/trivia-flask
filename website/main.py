@@ -129,13 +129,16 @@ def _questions():
         if question_id is None: # render no_questions.html
             global finish_list
             place = len(finish_list)
+            
+            if not place:
+                global database_refreshed_by
+                database_refreshed_by = session['nickname']
+
             if session["nickname"] not in finish_list:
                 write_log(f"[User] {session['nickname']}", f"finish all the questions. (#{place})")
 
                 finish_list += [session["nickname"]]
                 place += 1
-                global database_refreshed_by
-                database_refreshed_by = session['nickname']
 
             flash(f"You are the {'first' if place==1 else '#'+str(place)} to complete all of the questions since last database was refresh! ({questions_update_time})", category="success")
 
