@@ -200,7 +200,7 @@ def create_random_question(user_id):
 
 
 def load_questions_from_web():
-    r = requests.get("https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple")
+    r = requests.get("https://opentdb.com/api.php?amount=20&difficulty=easy&type=multiple")
     # r.text.replace("&#039;", "'").replace("&quot;", "'").replace("&amp;", "&")
     j = json.loads(r.text)
     for count, question in enumerate(j['results'], 1):
