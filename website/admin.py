@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, url_for, render_template, request, session, flash
 from .models import User
 from . import db
-from .main import reload_questions, finish_list, write_log
+from .main import reload_questions, finish_list#, write_log
 from flask_login import current_user, login_required
 
 ADMIN_PASSWORD = "banana"
@@ -96,7 +96,7 @@ def admin():
 
         elif "refresh_questions_database" in request.form:
             try:
-                reload_questions()
+                reload_questions(session['nickname'])
 
                 flash("Questions database have been refreshed!", category='success')
                 print(f"[ADMIN] {session['nickname']} Refresh questions database")

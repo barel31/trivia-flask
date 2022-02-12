@@ -108,7 +108,7 @@ def _questions():
                 return redirect(url_for("main._questions"))
 
             try:
-                reload_questions()
+                reload_questions(session['nickname'])
 
                 flash("Questions database have been refreshed!", category='success')
                 print(f"User {session['nickname']} Refresh questions database")
@@ -236,6 +236,8 @@ def check_for_answer(question_id):
 def points(user_id, points):
     found_user = User.query.filter_by(id=user_id).first()
     found_user.score += points
+    if found_user.score < 0:
+        found_user.score = 0
     db.session.commit()
 
     if "score" in session:
@@ -255,11 +257,11 @@ def check_for_user_rank(user_id):
     return -1
 
 
-def reload_questions():
+def reload_questions(name):
     load_questions_from_web()
 
     global database_refreshed_by
-    database_refreshed_by = 'Admin'
+    database_refreshed_by = name
 
     answered_dict.clear()
     finish_list.clear()
