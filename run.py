@@ -5,4 +5,4 @@ app = create_app()
 HOST = '0.0.0.0'
 
 if __name__ == '__main__':
-    app.run(debug=False, host=HOST)
+    app.run(debug=False, host=HOST, use_reloader=False)
