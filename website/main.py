@@ -142,7 +142,7 @@ def _questions():
 
             flash(f"You are the {'first' if place==1 else '#'+str(place)} to complete all of the questions since last database was refresh! ({questions_update_time})", category="success")
 
-            return render_template("no_questions.html", number=place, database_time=questions_update_time, finish_list=finish_list)
+            return render_template("no_questions.html", number=place, database_time=questions_update_time, finish_list=finish_list, database_refreshed_by=database_refreshed_by)
 
         user_id = current_user.get_id()
         if user_id not in answered_dict.keys():
