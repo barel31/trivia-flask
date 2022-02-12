@@ -96,7 +96,7 @@ def admin():
 
         elif "refresh_questions_database" in request.form:
             try:
-                reload_questions(session['nickname'])
+                reload_questions(f"Admin: {session['nickname']}")
 
                 flash("Questions database have been refreshed!", category='success')
                 print(f"[ADMIN] {session['nickname']} Refresh questions database")
