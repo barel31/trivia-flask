@@ -94,7 +94,7 @@ def _questions():
                 else:
                     answered_dict[user_id] = [int(question_id)]
             else: # wrong answer
-                flash(f'Wrong!, you lost 3 points\nthe answer is ({correct_answer}) {questions[int(question_id)]["answers"][correct_answer-1]}', category='error')
+                flash(f'Wrong!, you lost 3 points, the answer is ({correct_answer}) {questions[int(question_id)]["answers"][correct_answer-1]}', category='error')
                 points(user_id, -3)
 
             print("User", session["nickname"], "answered", "right" if is_right else "wrong", "to question #" + question_id)
