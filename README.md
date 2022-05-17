@@ -1,6 +1,6 @@
 # Trivia-Game flask
 Trivia game website build in flask framework
-http://trivia-flask.azurewebsites.net/play
+https://evening-oasis-66395.herokuapp.com/play
 
 # Installation:
 1. Edit run.py:
