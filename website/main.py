@@ -1,6 +1,7 @@
+import os
 from flask import Blueprint, redirect, url_for, render_template, request, session, flash
 from flask_login import login_user, login_required, logout_user, current_user
-from .models import User
+from website.models import User
 from . import db
 import random
 import json
@@ -8,11 +9,14 @@ import requests
 import html
 import time
 
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+
 questions = {}
 answered_dict = {}
 finish_list = []
 database_refreshed_by = 'Server'
-ADMIN_PASSWORD = "banana"
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
 questions_update_time = ''
 
 app_main = Blueprint("main", __name__)

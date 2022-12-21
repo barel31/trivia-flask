@@ -1,17 +1,21 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+
 db = SQLAlchemy()
-DB_NAME = 'test2.sqlite3'
+DB_NAME = os.environ['DATABASE_NAME']
 
 
 def create_app():
     app = Flask(__name__)
 
-    app.secret_key = "barel31"
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://zzeoiakyeudtph:6d662bd9771ce97f738b769f29d3100ca8996d41c26bbc3cbec6d4742cd904a2@ec2-35-153-35-94.compute-1.amazonaws.com:5432/d5e7lpuv8v66ck'#f'sqlite:///{DB_NAME}'
+    app.secret_key = os.environ['DATABASE_SECRET_KEY']
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
@@ -24,7 +28,7 @@ def create_app():
 
     load_questions_from_web()
 
-    from .models import User
+    from website.models import User
     create_database(app)
 
     login_manager = LoginManager()
