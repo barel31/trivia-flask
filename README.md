@@ -1,15 +1,15 @@
 # Trivia-Game flask
 Trivia game website build in flask framework
-http://trivia-flask.azurewebsites.net/play
+https://trivia-flask.onrender.com/
 
 # Installation:
-1. Edit run.py:
-  Edit 'HOST' to the IP Address (default '0.0.0.0') 
-2. Edit website/__ init __.py:
-  Edit 'DB_NAME' to the database path (default 'test2.sqlite3')
-3. Edit website/admin.py:
-  Edit 'ADMIN_PASSWORD' to your Admin panel password (default 'banana')
+ 1. Edit .env file
+  >DATABASE_SECRET_KEY to your database secret key
 
-4. Open your router admin panel and open port 5000
+  >DATABASE_URI to your database URI
+   
+  >DATABASE_URI to your database URI   
 
-5. Run run.py to run the website
+2. Open port 5000 in your router admin panel
+
+3. Run the file run.py
