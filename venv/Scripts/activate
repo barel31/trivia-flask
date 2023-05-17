@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\barel\Desktop\trivia-flask\venv"
+VIRTUAL_ENV="C:\Users\barel\Desktop\projects\trivia-flask\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

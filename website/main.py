@@ -88,7 +88,7 @@ def _questions():
                 flash('Correct, you got 5 points!', category="success")
 
                 rank = check_for_user_rank(user_id)
-                points(user_id, 5)
+                add_user_points(user_id, 5)
                 rank2 = check_for_user_rank(user_id)
                 if rank2 < rank:
                     flash(f'You went up in the Scoreboard! Your position is now #{rank2}!', category="success")
@@ -99,7 +99,7 @@ def _questions():
                     answered_dict[user_id] = [int(question_id)]
             else: # wrong answer
                 flash(f'Wrong! you lost 3 points, the answer is ({correct_answer}) {questions[int(question_id)]["answers"][correct_answer-1]}', category='error')
-                points(user_id, -3)
+                add_user_points(user_id, -3)
 
             print("User", session["nickname"], "answered", "right" if is_right else "wrong", "to question #" + question_id)
 
@@ -237,7 +237,7 @@ def check_for_answer(question_id):
     return correct_answer
 
 
-def points(user_id, points):
+def add_user_points(user_id, points):
     found_user = User.query.filter_by(id=user_id).first()
     found_user.score += points
     if found_user.score < 0:
