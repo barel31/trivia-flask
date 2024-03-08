@@ -1,15 +1,12 @@
-# Trivia-Game flask
-Trivia game website build in flask framework
-https://trivia-flask.onrender.com/
+# Trivia Game Flask
+A trivia game website built using the Flask framework. Check it out live at https://trivia-flask.onrender.com/.
 
-# Installation:
- 1. Edit .env file and change:
-  >DATABASE_SECRET_KEY to your database secret key
+# Installation
+Configure the .env file with your settings:
 
-  >DATABASE_URI to your database URI
-   
-  >ADMIN_PASSWORD to your admin panel password   
+DATABASE_SECRET_KEY: Set this to your database secret key.
+DATABASE_URI: Set this to your database URI.
+ADMIN_PASSWORD: Set this to your desired admin panel password.
+Ensure that port 5000 is open in your router's admin panel.
 
-2. Open port 5000 in your router admin panel
-
-3. Run the file run.py
+Start the application by running run.py.
